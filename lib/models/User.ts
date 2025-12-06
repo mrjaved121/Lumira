@@ -29,7 +29,6 @@ const UserSchema = new Schema<IUser>(
     email: {
       type: String,
       required: [true, 'Please provide an email'],
-      unique: true,
       lowercase: true,
       trim: true,
       match: [
@@ -44,8 +43,7 @@ const UserSchema = new Schema<IUser>(
     },
     googleId: {
       type: String,
-      sparse: true, // Allows multiple nulls but enforces uniqueness for non-null values
-      unique: true,
+      // sparse and unique are defined in index below
     },
     phone: {
       type: String,
