@@ -72,6 +72,8 @@ export interface IUser extends Document {
   settings?: IUserSettings;
   createdAt: Date;
   updatedAt: Date;
+  // Methods
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 // Export other interfaces as needed
