@@ -11,16 +11,22 @@ export enum UserRole {
 export enum BookingStatus {
   PENDING = 'pending',
   CONFIRMED = 'confirmed',
-  CANCELLED = 'cancelled',
+  IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
-  DECLINED = 'declined',
+  DELIVERED = 'delivered',
+  CANCELLED = 'cancelled',
+  REFUNDED = 'refunded',
+  DECLINED = 'declined', // Keep for backward compatibility
 }
 
 export enum PaymentStatus {
   PENDING = 'pending',
-  PAID = 'paid',
-  REFUNDED = 'refunded',
+  PROCESSING = 'processing',
+  SUCCEEDED = 'succeeded',
   FAILED = 'failed',
+  REFUNDED = 'refunded',
+  PARTIALLY_REFUNDED = 'partially_refunded',
+  PAID = 'paid', // Keep for backward compatibility
 }
 
 export enum TransactionType {
@@ -54,14 +60,23 @@ export enum MessageStatus {
 export enum PaymentMethodType {
   CREDIT_CARD = 'credit_card',
   DEBIT_CARD = 'debit_card',
+  APPLE_PAY = 'apple_pay',
+  GOOGLE_PAY = 'google_pay',
   BANK_ACCOUNT = 'bank_account',
 }
 
 export enum NotificationType {
   BOOKING_REQUEST = 'booking_request',
+  BOOKING_CONFIRMED = 'booking_confirmed',
+  BOOKING_CANCELLED = 'booking_cancelled',
+  MESSAGE_RECEIVED = 'message_received',
+  PAYMENT_RECEIVED = 'payment_received',
+  REVIEW_RECEIVED = 'review_received',
+  MEDIA_UPLOADED = 'media_uploaded',
+  SYSTEM_ANNOUNCEMENT = 'system_announcement',
+  // Legacy values for backward compatibility
   BOOKING_ACCEPTED = 'booking_accepted',
   BOOKING_DECLINED = 'booking_declined',
-  BOOKING_CANCELLED = 'booking_cancelled',
   BOOKING_COMPLETED = 'booking_completed',
   MESSAGE = 'message',
   REVIEW = 'review',

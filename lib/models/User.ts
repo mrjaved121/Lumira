@@ -18,13 +18,15 @@ const UserSchema = new Schema<IUser>(
     },
     firstName: {
       type: String,
+      required: [true, 'First name is required'],
       trim: true,
-      maxlength: [50, 'First name cannot be more than 50 characters'],
+      maxlength: [100, 'First name cannot be more than 100 characters'],
     },
     lastName: {
       type: String,
+      required: [true, 'Last name is required'],
       trim: true,
-      maxlength: [50, 'Last name cannot be more than 50 characters'],
+      maxlength: [100, 'Last name cannot be more than 100 characters'],
     },
     email: {
       type: String,
@@ -55,9 +57,10 @@ const UserSchema = new Schema<IUser>(
       default: UserRole.CUSTOMER,
       required: true,
     },
-    specialties: {
-      type: [String],
-      default: [],
+    emailVerified: {
+      type: Boolean,
+      required: [true, 'Email verification status is required'],
+      default: false,
     },
     profilePicture: {
       type: String,

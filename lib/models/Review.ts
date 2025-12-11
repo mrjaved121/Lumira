@@ -1,7 +1,7 @@
 /**
  * Review Model
- * Customer reviews for photographers
- * Complete implementation according to ERD
+ * Client ratings and feedback for photographers
+ * Based on Figma ERD
  */
 
 import mongoose, { Schema, Model, Types } from 'mongoose';
@@ -12,18 +12,10 @@ export interface IReview extends mongoose.Document {
   _id: Types.ObjectId;
   booking: Types.ObjectId; // Reference to Booking (required, unique)
   photographer: Types.ObjectId; // Reference to Photographer (required)
-  customer: Types.ObjectId; // Reference to User (customer, required)
-  rating: number; // Overall rating (1-5, required)
-  title?: string; // Review title (max 200 chars)
-  comment: string; // Review text (required, max 1000 chars)
-  categories?: {
-    professionalism?: number; // Rating (1-5)
-    communication?: number; // Rating (1-5)
-    quality?: number; // Rating (1-5)
-    punctuality?: number; // Rating (1-5)
-  };
-  isVerified: boolean; // Verified review (default: false)
-  isPublic: boolean; // Public visibility (default: true)
+  client: Types.ObjectId; // Reference to User (client, required)
+  rating: number; // Rating (1-5, required, INTEGER)
+  comment?: string; // Review comment (TEXT)
+  isVisible: boolean; // Visibility flag (required, default: true)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,69 +38,35 @@ const ReviewSchema = new Schema<IReview>(
       required: [true, 'Review must be associated with a photographer'],
     },
     
-    // Reference to User (customer)
-    customer: {
+    // Reference to User (client)
+    client: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: [true, 'Review must have a customer'],
+      required: [true, 'Review must have a client'],
     },
     
-    // Overall rating (1-5)
+    // Rating (1-5, integer)
     rating: {
       type: Number,
       required: [true, 'Rating is required'],
       min: [1, 'Rating must be at least 1'],
       max: [5, 'Rating cannot be more than 5'],
+      validate: {
+        validator: Number.isInteger,
+        message: 'Rating must be an integer',
+      },
     },
     
-    // Review title
-    title: {
-      type: String,
-      maxlength: [200, 'Title cannot be more than 200 characters'],
-      trim: true,
-    },
-    
-    // Review comment/text
+    // Review comment
     comment: {
       type: String,
-      required: [true, 'Review comment is required'],
-      maxlength: [1000, 'Comment cannot be more than 1000 characters'],
       trim: true,
     },
     
-    // Category ratings
-    categories: {
-      professionalism: {
-        type: Number,
-        min: [1, 'Professionalism rating must be at least 1'],
-        max: [5, 'Professionalism rating cannot be more than 5'],
-      },
-      communication: {
-        type: Number,
-        min: [1, 'Communication rating must be at least 1'],
-        max: [5, 'Communication rating cannot be more than 5'],
-      },
-      quality: {
-        type: Number,
-        min: [1, 'Quality rating must be at least 1'],
-        max: [5, 'Quality rating cannot be more than 5'],
-      },
-      punctuality: {
-        type: Number,
-        min: [1, 'Punctuality rating must be at least 1'],
-        max: [5, 'Punctuality rating cannot be more than 5'],
-      },
-    },
-    
-    // Verified review status
-    isVerified: {
+    // Visibility flag
+    isVisible: {
       type: Boolean,
-      default: false,
-    },
-    
-    // Public visibility
-    isPublic: {
-      type: Boolean,
+      required: [true, 'Visibility status is required'],
       default: true,
     },
   },
@@ -122,23 +80,23 @@ const ReviewSchema = new Schema<IReview>(
 // Indexes
 ReviewSchema.index({ booking: 1 }, { unique: true }); // One review per booking
 ReviewSchema.index({ photographer: 1, createdAt: -1 }); // Descending for photographer's reviews
-ReviewSchema.index({ customer: 1, createdAt: -1 }); // Descending for customer's reviews
+ReviewSchema.index({ rating: 1 }); // For rating filtering
+ReviewSchema.index({ isVisible: 1 }); // For visibility filtering
 
-// Function to update photographer rating
+// Function to update photographer average rating
 async function updatePhotographerRating(photographerId: Types.ObjectId) {
   try {
-    // Get all public reviews for this photographer
+    // Get all visible reviews for this photographer
     const ReviewModel = mongoose.model<IReview>('Review');
     const reviews = await ReviewModel.find({
       photographer: photographerId,
-      isPublic: true,
+      isVisible: true,
     });
 
     if (reviews.length === 0) {
       // No reviews, set rating to 0
       await Photographer.findByIdAndUpdate(photographerId, {
-        rating: 0,
-        totalReviews: 0,
+        averageRating: 0.0,
       });
       return;
     }
@@ -147,10 +105,9 @@ async function updatePhotographerRating(photographerId: Types.ObjectId) {
     const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
     const averageRating = totalRating / reviews.length;
 
-    // Update photographer's rating and total reviews count
+    // Update photographer's average rating (round to 2 decimal places)
     await Photographer.findByIdAndUpdate(photographerId, {
-      rating: Math.round(averageRating * 10) / 10, // Round to 1 decimal place
-      totalReviews: reviews.length,
+      averageRating: Math.round(averageRating * 100) / 100,
     });
   } catch (error) {
     console.error('Error updating photographer rating:', error);
@@ -159,8 +116,8 @@ async function updatePhotographerRating(photographerId: Types.ObjectId) {
 
 // Post-save hook: Update photographer rating when review is saved
 ReviewSchema.post('save', async function (doc) {
-  // Only update if review is public
-  if (doc.isPublic) {
+  // Only update if review is visible
+  if (doc.isVisible) {
     await updatePhotographerRating(doc.photographer);
   }
 });
@@ -185,6 +142,3 @@ const Review: Model<IReview> =
   mongoose.models.Review || mongoose.model<IReview>('Review', ReviewSchema);
 
 export default Review;
-
-
-

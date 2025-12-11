@@ -1,11 +1,11 @@
 /**
  * Booking Model
- * Booking/appointment between customer and photographer
- * Complete implementation according to ERD
+ * Core booking lifecycle management
+ * Based on Figma ERD
  */
 
 import mongoose, { Schema, Model, Types } from 'mongoose';
-import { BookingStatus, PaymentStatus } from '@/lib/constants/enums';
+import { BookingStatus } from '@/lib/constants/enums';
 import { DEFAULT_COMMISSION_PERCENTAGE, DEFAULT_COMMISSION_FIXED } from '@/lib/constants/enums';
 
 // TypeScript interface for Booking
@@ -13,38 +13,18 @@ export interface IBooking extends mongoose.Document {
   _id: Types.ObjectId;
   client: Types.ObjectId; // Reference to User (customer, required)
   photographer: Types.ObjectId; // Reference to Photographer (required)
-  date: Date; // Booking date (required)
-  startTime: string; // Start time (required)
-  duration: number; // Duration in hours (required, min: 1)
-  location: string; // Location address (required)
-  notes?: string; // Additional notes (max 500 chars)
-  status: BookingStatus; // Status enum (default: pending)
-  pricing: {
-    basePrice: number; // Base price (required, min: 0)
-    hourlyRate?: number; // Hourly rate (min: 0)
-    durationHours: number; // Duration in hours (required, min: 1)
-    subtotal: number; // Subtotal (calculated)
-    commission: number; // Platform commission (calculated)
-    commissionPercentage?: number; // Commission % (default: 9)
-    commissionFixed?: number; // Fixed commission (default: 2)
-    total: number; // Total amount (calculated)
-    photographerEarnings: number; // Photographer earnings (calculated)
-  };
-  payment?: {
-    status?: PaymentStatus; // Payment status enum
-    paymentMethod?: string; // Payment method
-    transactionId?: string; // Transaction ID
-    paidAt?: Date; // Payment timestamp
-    refundedAt?: Date; // Refund timestamp
-    refundAmount?: number; // Refund amount
-    refundReason?: string; // Refund reason
-  };
-  photos?: Types.ObjectId[]; // Array of Photo references
-  review?: Types.ObjectId; // Reference to Review (one per booking)
-  cancelledBy?: 'client' | 'photographer' | 'admin'; // Who cancelled
-  cancellationReason?: string; // Cancellation reason
-  cancelledAt?: Date; // Cancellation timestamp
-  completedAt?: Date; // Completion timestamp
+  photographyType: Types.ObjectId; // Reference to PhotographyType (required)
+  status: BookingStatus; // Status enum (required, default: pending)
+  bookingDate: Date; // Booking date (required)
+  startTime: string; // Start time (required, TIME format)
+  endTime: string; // End time (required, TIME format)
+  locationAddress: string; // Location address (required, TEXT)
+  locationCity: string; // Location city (required, max 100 chars)
+  totalAmount: number; // Total booking amount (required, min: 0)
+  commissionAmount: number; // Platform commission (required, min: 0)
+  photographerPayout: number; // Photographer payout (required, min: 0)
+  specialRequests?: string; // Special requests (TEXT)
+  cancellationReason?: string; // Cancellation reason (TEXT)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -66,153 +46,87 @@ const BookingSchema = new Schema<IBooking>(
       required: [true, 'Booking must have a photographer'],
     },
     
-    // Booking date
-    date: {
-      type: Date,
-      required: [true, 'Booking date is required'],
-    },
-    
-    // Start time
-    startTime: {
-      type: String,
-      required: [true, 'Start time is required'],
-    },
-    
-    // Duration in hours
-    duration: {
-      type: Number,
-      required: [true, 'Duration is required'],
-      min: [1, 'Duration must be at least 1 hour'],
-    },
-    
-    // Location address
-    location: {
-      type: String,
-      required: [true, 'Location is required'],
-      trim: true,
-    },
-    
-    // Additional notes
-    notes: {
-      type: String,
-      maxlength: [500, 'Notes cannot be more than 500 characters'],
-      trim: true,
+    // Reference to PhotographyType
+    photographyType: {
+      type: Schema.Types.ObjectId,
+      ref: 'PhotographyType',
+      required: [true, 'Booking must have a photography type'],
     },
     
     // Booking status
     status: {
       type: String,
       enum: Object.values(BookingStatus),
+      required: [true, 'Booking status is required'],
       default: BookingStatus.PENDING,
-      required: true,
     },
     
-    // Pricing breakdown
-    pricing: {
-      basePrice: {
-        type: Number,
-        required: [true, 'Base price is required'],
-        min: [0, 'Base price cannot be negative'],
-      },
-      hourlyRate: {
-        type: Number,
-        min: [0, 'Hourly rate cannot be negative'],
-      },
-      durationHours: {
-        type: Number,
-        required: [true, 'Duration hours is required'],
-        min: [1, 'Duration hours must be at least 1'],
-      },
-      subtotal: {
-        type: Number,
-        required: true,
-        min: [0, 'Subtotal cannot be negative'],
-      },
-      commission: {
-        type: Number,
-        required: true,
-        min: [0, 'Commission cannot be negative'],
-      },
-      commissionPercentage: {
-        type: Number,
-        default: DEFAULT_COMMISSION_PERCENTAGE,
-      },
-      commissionFixed: {
-        type: Number,
-        default: DEFAULT_COMMISSION_FIXED,
-      },
-      total: {
-        type: Number,
-        required: true,
-        min: [0, 'Total cannot be negative'],
-      },
-      photographerEarnings: {
-        type: Number,
-        required: true,
-        min: [0, 'Photographer earnings cannot be negative'],
-      },
+    // Booking date
+    bookingDate: {
+      type: Date,
+      required: [true, 'Booking date is required'],
     },
     
-    // Payment details
-    payment: {
-      status: {
-        type: String,
-        enum: Object.values(PaymentStatus),
-      },
-      paymentMethod: {
-        type: String,
-        trim: true,
-      },
-      transactionId: {
-        type: String,
-        trim: true,
-      },
-      paidAt: {
-        type: Date,
-      },
-      refundedAt: {
-        type: Date,
-      },
-      refundAmount: {
-        type: Number,
-        min: [0, 'Refund amount cannot be negative'],
-      },
-      refundReason: {
-        type: String,
-        trim: true,
-      },
-    },
-    
-    // Array of Photo references
-    photos: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Photo',
-      },
-    ],
-    
-    // Reference to Review (one per booking)
-    review: {
-      type: Schema.Types.ObjectId,
-      ref: 'Review',
-    },
-    
-    // Cancellation details
-    cancelledBy: {
+    // Start time (HH:MM format)
+    startTime: {
       type: String,
-      enum: ['client', 'photographer', 'admin'],
+      required: [true, 'Start time is required'],
+      match: [/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Start time must be in HH:MM format'],
     },
-    cancellationReason: {
+    
+    // End time (HH:MM format)
+    endTime: {
+      type: String,
+      required: [true, 'End time is required'],
+      match: [/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'End time must be in HH:MM format'],
+    },
+    
+    // Location address
+    locationAddress: {
+      type: String,
+      required: [true, 'Location address is required'],
+      trim: true,
+    },
+    
+    // Location city
+    locationCity: {
+      type: String,
+      required: [true, 'Location city is required'],
+      maxlength: [100, 'City cannot exceed 100 characters'],
+      trim: true,
+    },
+    
+    // Total booking amount
+    totalAmount: {
+      type: Number,
+      required: [true, 'Total amount is required'],
+      min: [0, 'Total amount cannot be negative'],
+    },
+    
+    // Platform commission
+    commissionAmount: {
+      type: Number,
+      required: [true, 'Commission amount is required'],
+      min: [0, 'Commission cannot be negative'],
+    },
+    
+    // Photographer payout
+    photographerPayout: {
+      type: Number,
+      required: [true, 'Photographer payout is required'],
+      min: [0, 'Photographer payout cannot be negative'],
+    },
+    
+    // Special requests
+    specialRequests: {
       type: String,
       trim: true,
     },
-    cancelledAt: {
-      type: Date,
-    },
     
-    // Completion timestamp
-    completedAt: {
-      type: Date,
+    // Cancellation reason
+    cancellationReason: {
+      type: String,
+      trim: true,
     },
   },
   {
@@ -223,43 +137,36 @@ const BookingSchema = new Schema<IBooking>(
 );
 
 // Indexes
-BookingSchema.index({ client: 1, createdAt: -1 }); // Descending for client's bookings
-BookingSchema.index({ photographer: 1, createdAt: -1 }); // Descending for photographer's bookings
-BookingSchema.index({ status: 1, date: 1 }); // For filtering by status and date
-BookingSchema.index({ date: 1 }); // For date-based queries
-BookingSchema.index({ review: 1 }, { unique: true, sparse: true }); // One review per booking
+BookingSchema.index({ client: 1 }); // For client lookups
+BookingSchema.index({ photographer: 1 }); // For photographer lookups
+BookingSchema.index({ status: 1 }); // For status filtering
+BookingSchema.index({ bookingDate: 1 }); // For date queries
+BookingSchema.index({ createdAt: -1 }); // Descending for date sorting
 
-// Pre-save hook: Auto-calculate pricing
+// Pre-save hook: Auto-calculate commission and payout
 BookingSchema.pre('save', function (next) {
-  // Only calculate if pricing fields have changed or it's a new document
-  if (this.isNew || this.isModified('pricing.basePrice') || 
-      this.isModified('pricing.hourlyRate') || 
-      this.isModified('pricing.durationHours') ||
-      this.isModified('duration')) {
+  // Only calculate if totalAmount has changed or it's a new document
+  if (this.isNew || this.isModified('totalAmount')) {
+    // Calculate commission: (totalAmount * 9%) + $2
+    const commissionPercentage = DEFAULT_COMMISSION_PERCENTAGE;
+    const commissionFixed = DEFAULT_COMMISSION_FIXED;
     
-    // Ensure durationHours matches duration
-    if (!this.pricing.durationHours) {
-      this.pricing.durationHours = this.duration;
+    this.commissionAmount = (this.totalAmount * commissionPercentage / 100) + commissionFixed;
+    
+    // Calculate photographer payout: totalAmount - commissionAmount
+    this.photographerPayout = this.totalAmount - this.commissionAmount;
+  }
+  
+  // Validate end time is after start time
+  if (this.startTime && this.endTime) {
+    const [startHour, startMin] = this.startTime.split(':').map(Number);
+    const [endHour, endMin] = this.endTime.split(':').map(Number);
+    const startMinutes = startHour * 60 + startMin;
+    const endMinutes = endHour * 60 + endMin;
+    
+    if (endMinutes <= startMinutes) {
+      return next(new Error('End time must be after start time'));
     }
-    
-    // Calculate subtotal: basePrice + (hourlyRate * duration)
-    const basePrice = this.pricing.basePrice || 0;
-    const hourlyRate = this.pricing.hourlyRate || 0;
-    const durationHours = this.pricing.durationHours || this.duration;
-    
-    this.pricing.subtotal = basePrice + (hourlyRate * durationHours);
-    
-    // Calculate commission: (subtotal * commissionPercentage%) + commissionFixed
-    const commissionPercentage = this.pricing.commissionPercentage || DEFAULT_COMMISSION_PERCENTAGE;
-    const commissionFixed = this.pricing.commissionFixed || DEFAULT_COMMISSION_FIXED;
-    
-    this.pricing.commission = (this.pricing.subtotal * commissionPercentage / 100) + commissionFixed;
-    
-    // Calculate total: subtotal + commission
-    this.pricing.total = this.pricing.subtotal + this.pricing.commission;
-    
-    // Calculate photographer earnings: subtotal - commission
-    this.pricing.photographerEarnings = this.pricing.subtotal - this.pricing.commission;
   }
   
   next();
@@ -271,6 +178,3 @@ const Booking: Model<IBooking> =
   mongoose.models.Booking || mongoose.model<IBooking>('Booking', BookingSchema);
 
 export default Booking;
-
-
-

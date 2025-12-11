@@ -16,12 +16,12 @@ export const updateUserProfileSchema = z.object({
   firstName: z
     .string()
     .min(1, 'First name must be at least 1 character')
-    .max(50, 'First name cannot exceed 50 characters')
+    .max(100, 'First name cannot exceed 100 characters')
     .optional(),
   lastName: z
     .string()
     .min(1, 'Last name must be at least 1 character')
-    .max(50, 'Last name cannot exceed 50 characters')
+    .max(100, 'Last name cannot exceed 100 characters')
     .optional(),
   phone: z
     .string()
@@ -75,9 +75,18 @@ export const updateUserSettingsSchema = z.object({
 });
 
 /**
+ * Update email verification status schema
+ * Used by system/admin to verify user email
+ */
+export const updateEmailVerificationSchema = z.object({
+  emailVerified: z.boolean(),
+});
+
+/**
  * Type exports
  */
 export type UpdateUserProfileInput = z.infer<typeof updateUserProfileSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 export type UpdateUserSettingsInput = z.infer<typeof updateUserSettingsSchema>;
+export type UpdateEmailVerificationInput = z.infer<typeof updateEmailVerificationSchema>;
 

@@ -7,12 +7,19 @@ import { UserRole } from '@/lib/constants/enums';
 
 /**
  * Registration schema
+ * Based on Figma ERD - firstName and lastName are required
  */
 export const registerSchema = z.object({
-  name: z
+  firstName: z
     .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(100, 'Name cannot exceed 100 characters'),
+    .min(1, 'First name is required')
+    .max(100, 'First name cannot exceed 100 characters')
+    .trim(),
+  lastName: z
+    .string()
+    .min(1, 'Last name is required')
+    .max(100, 'Last name cannot exceed 100 characters')
+    .trim(),
   email: z
     .string()
     .email('Please provide a valid email address')
@@ -29,6 +36,7 @@ export const registerSchema = z.object({
     .default(UserRole.CUSTOMER),
   phone: z
     .string()
+    .max(20, 'Phone number cannot exceed 20 characters')
     .optional()
     .refine(
       (val) => !val || /^\+?[\d\s-()]+$/.test(val),
