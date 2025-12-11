@@ -56,3 +56,12 @@ export function verifyRefreshToken(token: string): TokenPayload {
   }
 }
 
+/**
+ * Generate reset password token
+ * Returns a plain text token that should be sent to user via email
+ * The token will be hashed before storing in database
+ */
+export function generateResetPasswordToken(): string {
+  const crypto = require('crypto');
+  return crypto.randomBytes(32).toString('hex');
+}
