@@ -8,6 +8,7 @@ import connectDB from '@/lib/db/mongoose';
 import { User } from '@/lib/models';
 import { registerSchema } from '@/lib/schemas/auth.schema';
 import { generateToken, generateRefreshToken } from '@/lib/utils/jwt';
+import { ZodError } from 'zod';
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +35,9 @@ export async function POST(request: NextRequest) {
 
     // Create new user
     const user = await User.create({
-      name: validatedData.name,
+      firstName: validatedData.firstName,
+      lastName: validatedData.lastName,
+      name: `${validatedData.firstName} ${validatedData.lastName}`, // Concatenate for name field
       email: validatedData.email,
       password: validatedData.password, // Will be hashed by pre-save hook
       role: validatedData.role,
@@ -76,14 +79,14 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Handle validation errors
-    if (error.name === 'ZodError') {
+    if (error instanceof ZodError) {
       return NextResponse.json(
         {
           success: false,
           error: 'Validation failed',
-          details: error.errors.map((err: any) => ({
+          details: error.errors.map((err) => ({
             field: err.path.join('.'),
             message: err.message,
           })),
@@ -93,7 +96,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle duplicate email error
-    if (error.code === 11000) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
       return NextResponse.json(
         {
           success: false,
@@ -104,11 +107,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle other errors
+    const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+    const errorStack = error instanceof Error && process.env.NODE_ENV === 'development' ? error.stack : undefined;
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Registration failed',
-        ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
+        error: errorMessage,
+        ...(errorStack && { stack: errorStack }),
       },
       { status: 500 }
     );

@@ -54,9 +54,20 @@ export async function POST(request: NextRequest) {
           user.profilePicture = validatedData.profilePicture;
         }
         
-        // Update name if not set
-        if (!user.name && validatedData.name) {
+        // Update name and firstName/lastName if not set
+        if (validatedData.name && !user.name) {
           user.name = validatedData.name;
+          // Try to split name into firstName/lastName if not set
+          if (!user.firstName || !user.lastName) {
+            const nameParts = validatedData.name.trim().split(/\s+/);
+            if (nameParts.length >= 2) {
+              user.firstName = nameParts[0];
+              user.lastName = nameParts.slice(1).join(' ');
+            } else {
+              user.firstName = nameParts[0] || validatedData.name;
+              user.lastName = '';
+            }
+          }
         }
 
         await user.save();
@@ -65,13 +76,21 @@ export async function POST(request: NextRequest) {
 
     // Step 5: If user still doesn't exist, create a new user
     if (!user) {
+      // Split name into firstName and lastName
+      const nameParts = validatedData.name ? validatedData.name.trim().split(/\s+/) : [];
+      const firstName = nameParts.length > 0 ? nameParts[0] : '';
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+      
       user = await User.create({
         googleId: validatedData.googleId,
         email: validatedData.email,
-        name: validatedData.name,
+        name: validatedData.name || `${firstName} ${lastName}`.trim() || 'User',
+        firstName: firstName || 'User',
+        lastName: lastName || '',
         profilePicture: validatedData.profilePicture,
         // No password needed for OAuth users
         role: UserRole.CUSTOMER, // Default role
+        emailVerified: true, // Google OAuth emails are verified
       });
     }
 

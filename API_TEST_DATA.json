@@ -1,0 +1,409 @@
+{
+  "auth": {
+    "register": {
+      "customer": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe@example.com",
+        "password": "SecurePass123!",
+        "role": "customer",
+        "phone": "+1-514-555-1234"
+      },
+      "photographer": {
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "email": "jane.smith@example.com",
+        "password": "SecurePass123!",
+        "role": "photographer",
+        "phone": "+1-514-555-5678"
+      },
+      "invalid": {
+        "missingFields": {
+          "email": "test@example.com"
+        },
+        "invalidEmail": {
+          "firstName": "Test",
+          "lastName": "User",
+          "email": "invalid-email",
+          "password": "pass123"
+        },
+        "shortPassword": {
+          "firstName": "Test",
+          "lastName": "User",
+          "email": "test@example.com",
+          "password": "123"
+        }
+      }
+    },
+    "login": {
+      "valid": {
+        "email": "john.doe@example.com",
+        "password": "SecurePass123!"
+      },
+      "invalid": {
+        "wrongPassword": {
+          "email": "john.doe@example.com",
+          "password": "WrongPassword123!"
+        },
+        "nonexistentUser": {
+          "email": "nonexistent@example.com",
+          "password": "SomePassword123!"
+        },
+        "missingFields": {
+          "email": "test@example.com"
+        }
+      }
+    },
+    "googleOAuth": {
+      "newUser": {
+        "googleId": "123456789012345678901",
+        "email": "google.user@example.com",
+        "name": "Google User",
+        "profilePicture": "https://lh3.googleusercontent.com/a/default-user"
+      },
+      "existingUser": {
+        "googleId": "987654321098765432109",
+        "email": "john.doe@example.com",
+        "name": "John Doe",
+        "profilePicture": "https://lh3.googleusercontent.com/a/john-doe"
+      }
+    },
+    "refreshToken": {
+      "valid": {
+        "refreshToken": "REPLACE_WITH_ACTUAL_REFRESH_TOKEN"
+      },
+      "invalid": {
+        "refreshToken": "invalid.token.here"
+      }
+    },
+    "forgotPassword": {
+      "valid": {
+        "email": "john.doe@example.com"
+      },
+      "nonexistent": {
+        "email": "nonexistent@example.com"
+      }
+    },
+    "resetPassword": {
+      "valid": {
+        "token": "REPLACE_WITH_ACTUAL_RESET_TOKEN",
+        "password": "NewSecurePass123!"
+      },
+      "invalid": {
+        "token": "invalid-token",
+        "password": "NewPass123!"
+      }
+    }
+  },
+  "users": {
+    "updateProfile": {
+      "valid": {
+        "firstName": "John",
+        "lastName": "Doe Updated",
+        "phone": "+1-514-555-9999",
+        "location": {
+          "city": "Montreal",
+          "province": "Quebec",
+          "country": "Canada"
+        }
+      },
+      "partial": {
+        "firstName": "Johnny"
+      }
+    },
+    "changePassword": {
+      "valid": {
+        "currentPassword": "SecurePass123!",
+        "newPassword": "NewSecurePass456!"
+      },
+      "invalid": {
+        "wrongCurrentPassword": {
+          "currentPassword": "WrongPassword123!",
+          "newPassword": "NewSecurePass456!"
+        },
+        "samePassword": {
+          "currentPassword": "SecurePass123!",
+          "newPassword": "SecurePass123!"
+        }
+      }
+    }
+  },
+  "photographer": {
+    "createProfile": {
+      "valid": {
+        "businessName": "Jane's Photography Studio",
+        "bio": "Professional photographer specializing in wedding and portrait photography with 10 years of experience.",
+        "yearsExperience": 10,
+        "hourlyRate": 150,
+        "locationCity": "Montreal",
+        "locationRegion": "Quebec",
+        "portfolioUrl": "https://janesphotography.com",
+        "instagramHandle": "@janesphotography"
+      },
+      "minimal": {
+        "locationCity": "Montreal",
+        "locationRegion": "Quebec"
+      }
+    },
+    "updateProfile": {
+      "valid": {
+        "bio": "Updated bio with more details about my photography style.",
+        "hourlyRate": 175,
+        "portfolioUrl": "https://janesphotography.com/portfolio"
+      }
+    }
+  },
+  "booking": {
+    "create": {
+      "valid": {
+        "photographer": "REPLACE_WITH_PHOTOGRAPHER_ID",
+        "photographyType": "REPLACE_WITH_PHOTOGRAPHY_TYPE_ID",
+        "bookingDate": "2024-12-25T10:00:00.000Z",
+        "startTime": "09:00",
+        "endTime": "13:00",
+        "locationAddress": "123 Main Street, Montreal, QC",
+        "locationCity": "Montreal",
+        "totalAmount": 600,
+        "specialRequests": "Please bring backup equipment for outdoor shoot"
+      },
+      "invalid": {
+        "pastDate": {
+          "photographer": "REPLACE_WITH_PHOTOGRAPHER_ID",
+          "photographyType": "REPLACE_WITH_PHOTOGRAPHY_TYPE_ID",
+          "bookingDate": "2020-01-01T10:00:00.000Z",
+          "startTime": "09:00",
+          "endTime": "13:00",
+          "locationAddress": "123 Main Street",
+          "locationCity": "Montreal",
+          "totalAmount": 600
+        },
+        "endBeforeStart": {
+          "photographer": "REPLACE_WITH_PHOTOGRAPHER_ID",
+          "photographyType": "REPLACE_WITH_PHOTOGRAPHY_TYPE_ID",
+          "bookingDate": "2024-12-25T10:00:00.000Z",
+          "startTime": "13:00",
+          "endTime": "09:00",
+          "locationAddress": "123 Main Street",
+          "locationCity": "Montreal",
+          "totalAmount": 600
+        }
+      }
+    },
+    "updateStatus": {
+      "confirmed": {
+        "status": "confirmed"
+      },
+      "inProgress": {
+        "status": "in_progress"
+      },
+      "completed": {
+        "status": "completed"
+      },
+      "cancelled": {
+        "status": "cancelled",
+        "cancellationReason": "Client requested cancellation"
+      }
+    }
+  },
+  "review": {
+    "create": {
+      "valid": {
+        "booking": "REPLACE_WITH_BOOKING_ID",
+        "photographer": "REPLACE_WITH_PHOTOGRAPHER_ID",
+        "rating": 5,
+        "comment": "Excellent photographer! Very professional and delivered amazing photos.",
+        "isVisible": true
+      },
+      "minimal": {
+        "booking": "REPLACE_WITH_BOOKING_ID",
+        "photographer": "REPLACE_WITH_PHOTOGRAPHER_ID",
+        "rating": 4
+      },
+      "invalid": {
+        "invalidRating": {
+          "booking": "REPLACE_WITH_BOOKING_ID",
+          "photographer": "REPLACE_WITH_PHOTOGRAPHER_ID",
+          "rating": 6
+        }
+      }
+    },
+    "update": {
+      "valid": {
+        "rating": 5,
+        "comment": "Updated review comment",
+        "isVisible": true
+      }
+    }
+  },
+  "collection": {
+    "create": {
+      "valid": {
+        "name": "My Wedding Photos",
+        "description": "Beautiful photos from my wedding day",
+        "coverPhoto": "https://example.com/photos/cover.jpg",
+        "isPublic": false
+      },
+      "minimal": {
+        "name": "Vacation 2024"
+      }
+    },
+    "update": {
+      "valid": {
+        "name": "My Wedding Photos - Updated",
+        "description": "Updated description",
+        "isPublic": true
+      }
+    }
+  },
+  "conversation": {
+    "create": {
+      "valid": {
+        "photographer": "REPLACE_WITH_PHOTOGRAPHER_ID",
+        "booking": "REPLACE_WITH_BOOKING_ID"
+      },
+      "withoutBooking": {
+        "photographer": "REPLACE_WITH_PHOTOGRAPHER_ID"
+      }
+    }
+  },
+  "message": {
+    "create": {
+      "valid": {
+        "conversation": "REPLACE_WITH_CONVERSATION_ID",
+        "content": "Hello! I'm interested in booking a photography session."
+      },
+      "longMessage": {
+        "conversation": "REPLACE_WITH_CONVERSATION_ID",
+        "content": "This is a very long message that contains a lot of text. " + "A".repeat(1000)
+      }
+    }
+  },
+  "photographyType": {
+    "create": {
+      "valid": {
+        "name": "Wedding Photography",
+        "description": "Professional wedding photography services",
+        "icon": "camera"
+      },
+      "minimal": {
+        "name": "Portrait Photography"
+      }
+    }
+  },
+  "availability": {
+    "create": {
+      "valid": {
+        "dayOfWeek": 1,
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "isAvailable": true
+      },
+      "invalid": {
+        "endBeforeStart": {
+          "dayOfWeek": 1,
+          "startTime": "17:00",
+          "endTime": "09:00",
+          "isAvailable": true
+        }
+      }
+    },
+    "bulkUpdate": {
+      "valid": {
+        "availabilities": [
+          {
+            "dayOfWeek": 0,
+            "startTime": "10:00",
+            "endTime": "16:00",
+            "isAvailable": true
+          },
+          {
+            "dayOfWeek": 1,
+            "startTime": "09:00",
+            "endTime": "17:00",
+            "isAvailable": true
+          }
+        ]
+      }
+    }
+  },
+  "blockedDate": {
+    "create": {
+      "valid": {
+        "date": "2024-12-25T00:00:00.000Z",
+        "reason": "Holiday - Christmas"
+      },
+      "minimal": {
+        "date": "2024-12-31T00:00:00.000Z"
+      }
+    },
+    "bulkCreate": {
+      "valid": {
+        "dates": [
+          {
+            "date": "2024-12-25T00:00:00.000Z",
+            "reason": "Christmas"
+          },
+          {
+            "date": "2024-12-31T00:00:00.000Z",
+            "reason": "New Year's Eve"
+          }
+        ]
+      }
+    }
+  },
+  "media": {
+    "create": {
+      "photo": {
+        "booking": "REPLACE_WITH_BOOKING_ID",
+        "photographer": "REPLACE_WITH_PHOTOGRAPHER_ID",
+        "url": "https://example.com/photos/photo1.jpg",
+        "thumbnailUrl": "https://example.com/photos/thumbnails/photo1.jpg",
+        "type": "photo",
+        "title": "Wedding Ceremony",
+        "description": "Beautiful moment during the ceremony",
+        "isPortfolio": false
+      },
+      "video": {
+        "photographer": "REPLACE_WITH_PHOTOGRAPHER_ID",
+        "url": "https://example.com/videos/video1.mp4",
+        "type": "video",
+        "title": "Wedding Highlights",
+        "isPortfolio": true
+      }
+    }
+  },
+  "payment": {
+    "create": {
+      "valid": {
+        "booking": "REPLACE_WITH_BOOKING_ID",
+        "amount": 600,
+        "commission": 60,
+        "paymentMethod": "stripe",
+        "paymentStatus": "pending",
+        "stripePaymentId": "pi_1234567890"
+      }
+    },
+    "updateStatus": {
+      "paid": {
+        "paymentStatus": "paid",
+        "paidAt": "2024-12-01T10:00:00.000Z"
+      }
+    }
+  },
+  "refund": {
+    "create": {
+      "valid": {
+        "payment": "REPLACE_WITH_PAYMENT_ID",
+        "booking": "REPLACE_WITH_BOOKING_ID",
+        "refundAmount": 300,
+        "refundPercentage": 50,
+        "refundPolicyTier": "within_48_hours",
+        "reason": "Client requested cancellation",
+        "status": "pending"
+      }
+    }
+  }
+}
+
+
+
