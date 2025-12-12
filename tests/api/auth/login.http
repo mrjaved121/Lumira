@@ -1,0 +1,66 @@
+### Login API Test Cases
+### POST /api/auth/login
+### 
+### Use with REST Client extension in VS Code
+### 
+### Instructions:
+### 1. First, register a user using the register API
+### 2. Then use that email/password to test login
+### 3. Click "Send Request" above each request
+
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+
+### ✅ Test 1: Valid Login
+### Note: Replace email and password with a registered user's credentials
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "john.doe.test@example.com",
+  "password": "SecurePass123!"
+}
+
+### ❌ Test 2: Wrong Password
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "john.doe.test@example.com",
+  "password": "WrongPassword123!"
+}
+
+### ❌ Test 3: Nonexistent User
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "nonexistent.user@example.com",
+  "password": "SomePassword123!"
+}
+
+### ❌ Test 4: Missing Email
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "password": "SecurePass123!"
+}
+
+### ❌ Test 5: Missing Password
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "john.doe.test@example.com"
+}
+
+### ❌ Test 6: Invalid Email Format
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "invalid-email",
+  "password": "SecurePass123!"
+}
+

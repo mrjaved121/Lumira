@@ -1,0 +1,121 @@
+### Registration API Test Cases
+### POST /api/auth/register
+### 
+### Use with REST Client extension in VS Code or similar HTTP client
+### 
+### Instructions:
+### 1. Install REST Client extension in VS Code
+### 2. Click "Send Request" above each request
+### 3. Check the response in the output panel
+
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+
+### ✅ Test 1: Valid Registration - Customer
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe.test@example.com",
+  "password": "SecurePass123!",
+  "role": "customer",
+  "phone": "+1-514-555-1234"
+}
+
+### ✅ Test 2: Valid Registration - Photographer
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "email": "jane.smith.test@example.com",
+  "password": "SecurePass123!",
+  "role": "photographer",
+  "phone": "+1-514-555-5678"
+}
+
+### ❌ Test 3: Missing Required Fields
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "test@example.com"
+}
+
+### ❌ Test 4: Invalid Email Format
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "invalid-email",
+  "password": "SecurePass123!",
+  "role": "customer"
+}
+
+### ❌ Test 5: Password Too Short
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "test@example.com",
+  "password": "123",
+  "role": "customer"
+}
+
+### ❌ Test 6: Duplicate Email
+### Note: Run Test 1 first, then run this test with the same email
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Another",
+  "lastName": "User",
+  "email": "john.doe.test@example.com",
+  "password": "SecurePass123!",
+  "role": "customer"
+}
+
+### ❌ Test 7: Invalid Role
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "test@example.com",
+  "password": "SecurePass123!",
+  "role": "invalid_role"
+}
+
+### ❌ Test 8: FirstName Exceeds Max Length
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "lastName": "User",
+  "email": "test@example.com",
+  "password": "SecurePass123!",
+  "role": "customer"
+}
+
+### ❌ Test 9: Invalid Phone Number Format
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "test@example.com",
+  "password": "SecurePass123!",
+  "role": "customer",
+  "phone": "invalid-phone-format!!!"
+}
+

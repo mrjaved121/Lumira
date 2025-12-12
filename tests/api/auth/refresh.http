@@ -1,0 +1,45 @@
+### Refresh Token API Test Cases
+### POST /api/auth/refresh
+### 
+### Use with REST Client extension in VS Code
+### 
+### Instructions:
+### 1. First, login to get a refresh token
+### 2. Replace the refreshToken value below with the actual token
+### 3. Click "Send Request"
+
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+
+### ✅ Test 1: Valid Refresh Token
+### Note: Replace with actual refresh token from login
+POST {{baseUrl}}/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": "REPLACE_WITH_ACTUAL_REFRESH_TOKEN"
+}
+
+### ❌ Test 2: Invalid Refresh Token
+POST {{baseUrl}}/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": "invalid.token.here"
+}
+
+### ❌ Test 3: Missing Refresh Token
+POST {{baseUrl}}/auth/refresh
+Content-Type: {{contentType}}
+
+{
+}
+
+### ❌ Test 4: Empty Refresh Token
+POST {{baseUrl}}/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": ""
+}
+

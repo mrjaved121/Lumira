@@ -46,9 +46,9 @@ const PhotographerSchema = new Schema<IPhotographer>(
     
     // Biography
     bio: {
-      type: String,
-      trim: true,
-    },
+        type: String,
+        trim: true,
+      },
     
     // Years of experience
     yearsExperience: {
@@ -60,15 +60,15 @@ const PhotographerSchema = new Schema<IPhotographer>(
     hourlyRate: {
       type: Number,
       min: [0, 'Hourly rate cannot be negative'],
-    },
+      },
     
     // Location city (required)
     locationCity: {
-      type: String,
+        type: String,
       required: [true, 'Location city is required'],
       maxlength: [100, 'City cannot exceed 100 characters'],
-      trim: true,
-    },
+        trim: true,
+      },
     
     // Location region (required, Quebec only)
     locationRegion: {

@@ -1,0 +1,68 @@
+### User Profile API Test Cases
+### GET /api/users/me and PUT /api/users/me
+### 
+### Use with REST Client extension in VS Code
+### 
+### Instructions:
+### 1. First, login to get an access token
+### 2. Replace the token value in Authorization header below
+### 3. Click "Send Request"
+
+@baseUrl = http://localhost:3000/api
+@token = REPLACE_WITH_ACTUAL_ACCESS_TOKEN
+@contentType = application/json
+
+### ✅ Test 1: Get User Profile
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+
+### ✅ Test 2: Update User Profile (Full)
+PUT {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "firstName": "John",
+  "lastName": "Doe Updated",
+  "phone": "+1-514-555-9999",
+  "location": {
+    "city": "Montreal",
+    "province": "Quebec",
+    "country": "Canada"
+  }
+}
+
+### ✅ Test 3: Update User Profile (Partial)
+PUT {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Johnny"
+}
+
+### ❌ Test 4: Update Profile - Invalid Phone Format
+PUT {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "phone": "invalid-phone-format!!!"
+}
+
+### ❌ Test 5: Update Profile - FirstName Too Long
+PUT {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "firstName": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+}
+
+### ❌ Test 6: Missing Token
+GET {{baseUrl}}/users/me
+
+### ❌ Test 7: Invalid Token
+GET {{baseUrl}}/users/me
+Authorization: Bearer invalid.token.here
+

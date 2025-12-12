@@ -62,12 +62,34 @@ This report documents the review, update, and testing of all API endpoints in th
 ```
 
 **Test Cases:**
-- ✅ Valid registration (customer)
-- ✅ Valid registration (photographer)
-- ❌ Missing required fields
-- ❌ Invalid email format
-- ❌ Password too short
-- ❌ Duplicate email
+- ✅ Valid registration (customer) - [Test File](./tests/api/auth/register.test.ts)
+- ✅ Valid registration (photographer) - [Test File](./tests/api/auth/register.test.ts)
+- ❌ Missing required fields - [Test File](./tests/api/auth/register.test.ts)
+- ❌ Invalid email format - [Test File](./tests/api/auth/register.test.ts)
+- ❌ Password too short - [Test File](./tests/api/auth/register.test.ts)
+- ❌ Duplicate email - [Test File](./tests/api/auth/register.test.ts)
+
+**Test Files Available:**
+1. **Jest Test File:** `tests/api/auth/register.test.ts` - Run with `npm test`
+2. **HTTP Test File:** `tests/api/auth/register.http` - Use with REST Client extension
+3. **Postman Collection:** `tests/api/auth/register.postman.json` - Import into Postman
+4. **Shell Script:** `tests/api/auth/register.sh` - Run with `bash tests/api/auth/register.sh`
+
+**How to Run Tests:**
+```bash
+# Option 1: Jest (if configured)
+npm test -- tests/api/auth/register.test.ts
+
+# Option 2: HTTP file (VS Code REST Client extension)
+# Open tests/api/auth/register.http and click "Send Request"
+
+# Option 3: Postman
+# Import tests/api/auth/register.postman.json into Postman
+
+# Option 4: Shell script
+chmod +x tests/api/auth/register.sh
+./tests/api/auth/register.sh
+```
 
 ---
 
@@ -82,10 +104,16 @@ This report documents the review, update, and testing of all API endpoints in th
 ```
 
 **Test Cases:**
-- ✅ Valid login
-- ❌ Wrong password
-- ❌ Nonexistent user
-- ❌ Missing fields
+- ✅ Valid login - [Test File](./tests/api/auth/login.test.ts)
+- ❌ Wrong password - [Test File](./tests/api/auth/login.test.ts)
+- ❌ Nonexistent user - [Test File](./tests/api/auth/login.test.ts)
+- ❌ Missing fields - [Test File](./tests/api/auth/login.test.ts)
+
+**Test Files Available:**
+1. **Jest Test File:** `tests/api/auth/login.test.ts` - Run with `npm test`
+2. **HTTP Test File:** `tests/api/auth/login.http` - Use with REST Client extension
+3. **Postman Collection:** `tests/api/auth/login.postman.json` - Import into Postman
+4. **Shell Script:** `tests/api/auth/login.sh` - Run with `bash tests/api/auth/login.sh`
 
 ---
 

@@ -1,0 +1,82 @@
+### Google OAuth API Test Cases
+### POST /api/auth/google
+### 
+### Use with REST Client extension in VS Code
+
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+
+### ✅ Test 1: New User Registration via Google
+POST {{baseUrl}}/auth/google
+Content-Type: {{contentType}}
+
+{
+  "googleId": "123456789012345678901",
+  "email": "google.user.test@example.com",
+  "name": "Google User",
+  "profilePicture": "https://lh3.googleusercontent.com/a/default-user"
+}
+
+### ✅ Test 2: Existing User Login via Google
+### Note: Run Test 1 first, then run this test with the same googleId
+POST {{baseUrl}}/auth/google
+Content-Type: {{contentType}}
+
+{
+  "googleId": "123456789012345678901",
+  "email": "google.user.test@example.com",
+  "name": "Google User",
+  "profilePicture": "https://lh3.googleusercontent.com/a/default-user"
+}
+
+### ✅ Test 3: Link Google Account to Existing Email User
+### Note: First register a user with email/password, then run this
+POST {{baseUrl}}/auth/google
+Content-Type: {{contentType}}
+
+{
+  "googleId": "987654321098765432109",
+  "email": "john.doe.test@example.com",
+  "name": "John Doe",
+  "profilePicture": "https://lh3.googleusercontent.com/a/john-doe"
+}
+
+### ❌ Test 4: Missing Google ID
+POST {{baseUrl}}/auth/google
+Content-Type: {{contentType}}
+
+{
+  "email": "test@example.com",
+  "name": "Test User"
+}
+
+### ❌ Test 5: Missing Email
+POST {{baseUrl}}/auth/google
+Content-Type: {{contentType}}
+
+{
+  "googleId": "123456789",
+  "name": "Test User"
+}
+
+### ❌ Test 6: Invalid Email Format
+POST {{baseUrl}}/auth/google
+Content-Type: {{contentType}}
+
+{
+  "googleId": "123456789",
+  "email": "invalid-email",
+  "name": "Test User"
+}
+
+### ❌ Test 7: Invalid Profile Picture URL
+POST {{baseUrl}}/auth/google
+Content-Type: {{contentType}}
+
+{
+  "googleId": "123456789",
+  "email": "test@example.com",
+  "name": "Test User",
+  "profilePicture": "not-a-valid-url"
+}
+
